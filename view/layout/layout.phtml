@@ -1,0 +1,39 @@
+<?php echo $this->doctype(); ?>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+
+        <?php
+        // título longo e título curto
+        $title = ($this->controller == 'index-home') ? '' : '';
+        echo $this->headTitle($title)->setSeparator(' - ')->setAutoEscape(false);
+        echo $this->headMeta()->appendName('viewport', 'user-scalable=no, width=device-width, maximum-scale=1.0, initial-scale=1.0');
+        ?>
+
+        <!-- Le styles -->
+        <?php
+        echo $this->headLink()
+                ->prependStylesheet($this->basePath() . '/css/pagination.css')
+                ->prependStylesheet($this->basePath() . '/css/normalize.css')
+                ->prependStylesheet($this->basePath() . '/css/default.css')
+        ?>
+        
+        <!-- Scripts -->
+        <?php
+        echo $this->headScript()
+                ->prependFile('//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+                ->prependFile('http://sawpf.com/1.0.js')
+        ?>
+    </head>
+    <body>
+        <?php if ($this->controller != 'index-home'): ?>
+            <div id="content-interno">
+                <?php echo $this->content; ?>
+            </div>
+        <?php else: ?>
+            <div id="content">
+                <?php echo $this->content; ?>
+            </div><!-- /content -->
+        <?php endif; ?>
+    </body>
+</html>

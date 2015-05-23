@@ -1,0 +1,5 @@
+{% extends "layout/layout-admin" %}
+
+{% block content %}
+<br><p>Logado como: {{usuario.getNome()}}<br>Último login: {{ ultimoLogin.getDataHora().format('d/m/Y H:i:s') }}</p>
+{% endblock %}

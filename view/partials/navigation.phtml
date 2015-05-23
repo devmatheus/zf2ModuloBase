@@ -1,0 +1,54 @@
+<ul class="nav" id="side-menu">
+    <li><a href="<?php echo $this->url('home-admin') ?>" title="Página inicial"><span class="fa fa-home"></span> Início</a></li>
+    <?php
+    $view = $this;
+    $menu = function($sub) use ($view, &$menu) {
+        foreach ($sub as $pages) {
+            $icon = $pages->getCustomProperties()['icon'];
+            
+            if (count($pages->getPages()) > 0) { // se tem filho printa o ul (agrupador de links)
+                $subMenu = $menu($pages->getPages());
+                
+                if ($subMenu) {
+                    $subMenuActive = (false === strpos($subMenu, 'active')) ? '':' class="active"';
+                    
+                    $return .= '<li' . $subMenuActive . '>'
+                                    . '<a href="#"' . $subMenuActive . '>'
+                                        . (($icon) ? '<span class="' . $icon . '"></span> ':'')
+                                        . $pages->getLabel()
+                                    . '</a>'
+                                    . '<ul class="nav nav-second-level">'
+                                        . $subMenu
+                                    . '</ul>'
+                                . '</li>';
+                }
+            } else { // se não for ter filho então printa os links
+                $active = $pages->isActive() ? ' class="active" ':'';
+                $return .= '<li>'
+                                . '<a ' . $active . 'href="' . $view->url($pages->getRoute(), array('action' => $pages->getAction())) . '">'
+                                    . (($icon) ? '<span class="' . $icon . '"></span> ':'')
+                                    . $pages->getlabel()
+                                . '</a>'
+                            . '</li>';
+            }
+        }
+        return $return;
+    };
+
+    foreach ($this->container as $page) {
+        $icon = $page->getCustomProperties()['icon'];
+        $subMenu = $menu($page->getPages());
+        $active = (false === strpos($subMenu, 'active')) ? '':' class="active" ';
+        
+        echo '<li' . $active . '>'
+                    . '<a ' . $active . 'href="#">'
+                        . (($icon) ? '<span class="' . $icon . '"></span> ':'')
+                        . $page->getlabel()
+                        . '</a>'
+                    . '<ul class="nav nav-second-level">'
+                        . $subMenu
+                    . '</ul>'
+                . '</li>';
+    }
+?>
+</ul>

@@ -1,0 +1,93 @@
+{% extends "layout/layout-admin" %}
+
+{% block title %}{{ rotuloAction }} - {{ tituloModulo }} - {{ parent() }}{% endblock %}
+
+{% block inlineScript %}
+    {{ parent() }}
+    {% for js in javascript %}
+        <script src="{{ basePath() ~ js }}"></script>
+    {% endfor %}
+    
+    <script>
+        $('document').ready(function () {
+            if ($('.btn-group input:checked').length > 0) {
+                $('.btn-group input:checked').parent().addClass('active');
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}{% autoescape false %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">{{ tituloModulo }}<small> {{ rotuloAction|strtolower }}</small></h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+
+    {% if id is defined %}
+        {% set routeParams = {'action': 'editar', 'id': id} %}
+    {% else %}
+        {% set routeParams = {'action': 'editar'} %}
+    {% endif %}
+
+    {% do form.setAttributes({
+        'action': url(route, routeParams),
+        'role': 'form',
+        'class': 'form-horizontal'
+    }) %}
+
+    {% do form.prepare() %}
+
+    {% do formElementErrors()
+        .setMessageOpenFormat('<ul class="text-danger" style="display: block; clear: both"><li style="margin: 0; padding: 0">')
+        .setMessageSeparatorString('</li><li style="margin: 0; padding: 0">')
+        .setMessageCloseString('</li></ul>') %}
+
+    {{ form().openTag(form) }}
+
+    {% for campo in camposForm %}
+        {% set errors = formElementErrors().render(campo) %}
+        <div class="form-group{% if errors %} animated shake has-error has-feedback{% endif %}" id="div_{{ campo.getName() }}">
+
+        {% set attrs = campo.getAttributes() %}
+        
+        {% if campo.getLabel() is not null %}
+            {% do campo.setOptions({
+                'label_attributes': {
+                        'class': 'col-sm-2 control-label'
+                    }
+                }
+            ) %}
+
+            {% do campo.setAttribute('class', 'form-control ' ~ campo.getAttribute('class')) %}
+            
+            {{ formLabel(campo) }}
+        {% endif %}
+
+        {% if attribute(attrs, 'type') == 'radio' or attribute(attrs, 'type') == 'multi_checkbox' %}
+            {% set attrsDiv = 'class="btn-group col-sm-5" data-toggle="buttons"' %}
+        {% else %}
+            {% set attrsDiv = 'class="col-sm-5"' %}
+        {% endif %}
+
+        <div {{ attrsDiv }}>
+            {{ formElement(campo) }}
+
+        {% if errors %}
+            {% if attribute(attrs, 'type') == 'text' %}
+                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+            {% endif %}
+            
+            </div></div>
+            <div class="form-group animated shake">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-5">{{ errors }}</div>
+            </div>
+        {% else %}
+            </div></div>
+        {% endif %}
+    {% endfor %}
+    
+    {{ form().closeTag() }}
+{% endautoescape %}{% endblock %}
